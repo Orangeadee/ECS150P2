@@ -33,7 +33,10 @@ queue_t queue_create(void)
 	queue_t que = (queue_t)malloc(sizeof(struct queue));
 	assert(que);
 
-	que->begin = que->end = NULL;
+	que->begin = NULL;
+	que->end = NULL;
+	que->begin->next = NULL;
+	que->end->next = NULL;
 	que->size = 0;
 	return que;
 }
@@ -69,25 +72,144 @@ int queue_destroy(queue_t queue)
 	{
 		status = -1;
 	}
-	free(queue);
+	if(status == 0)
+	{
+		free(queue);
+	}
 	return status;
 }
 
+/*
+ *
+ * Enqueue:				*
+ * - Allocate spaces for storing data	*
+ *   into a new node pointer		*
+ * - Use assert() to check validity of	*
+ *   creating spaces for enter_node	*
+ * - Check the validity of queue and 	*
+ *   data, return -1 if empty		*
+ * - If it's a new queue, set it points *
+ *   to the begin of queue		*
+ * - Otherwise set it points to the end *
+ *   of queue				*
+ * - Increment size of queue		*
+ *					*
+ */
 int queue_enqueue(queue_t queue, void *data)
 {
 	/* TODO */
-	return -1;
+	struct node* enter_node = (struct node*)malloc(sizeof(struct node));
+	assert(enter_node);
+	if(queue == NULL || data == NULL)
+	{
+		return -1;
+	}
+	enter_node->data = data;
+	enter_node->next = NULL;
+
+	if(queue->size == 0)
+	{
+		queue->begin = enter_node;
+		queue->end = enter_node;
+	}
+	else
+	{
+		queue->end->next = enter_node;
+		queue->end = enter_node;
+	}
+	queue->size++;
+	return 0;
 }
 
+/*
+ * Dequeue:				*
+ * - First check if @queue or @data are	*
+ *   NULL, or queue is empty		*
+ * - Then create a node and store the	*
+ *   oldest data of queue		*
+ * - Make the begin pointer points to	*
+ *   the second oldest item in queue	*
+ * - Oldest item successfully removed	*
+ * - Decrement queue size and return 0	*
+ * 					*
+ */
 int queue_dequeue(queue_t queue, void **data)
 {
 	/* TODO */
-	return -1;
+	if(queue == NULL || queue->size == 0)
+	{
+		return -1;
+	}
+	struct node* old_node = queue->begin;
+	*data = old_node->data;
+	if(queue->begin != queue->end)
+	{
+		queue->begin = queue->begin->next;
+	}
+	else
+	{
+		queue->begin = NULL;
+		queue->end = NULL;
+	}
+	free(old_node);
+	queue->size--;
+	return 0;
 }
 
+/*
+ *
+ * Delete queue:			*
+ * - First do error some error checks	*
+ * - Loop through the queue to find the	*
+ *   match data				*
+ * - If data is found, save the next	*
+ *   data in temp and make the curr ptr *
+ *   points to the next data		*
+ * - Done using temp node, delete it	*
+ * - If data is found at the end of 	*
+ *   queue, set the end ptr in queue to *
+ *   curr ptr				*
+ * - Decrement queue size, return 0	*
+ * - If data is not found, make temp 	*
+ *   points to current node and make 	*
+ *   curr points to next node		*
+ * - Return -1 if not found in queue	*
+ * 					*   
+ */
 int queue_delete(queue_t queue, void *data)
 {
 	/* TODO */
+	if(queue == NULL || queue->size == 0)
+	{
+		return -1;
+	}
+	struct node* curr = queue->begin;
+	struct node* temp = NULL;
+	while(curr != NULL)
+	{
+		if(curr->data == data)
+		{
+			temp = curr->next;
+			if(curr == NULL)
+			{
+				return -1;
+			}
+			else
+			{
+				curr->data = temp->data;
+				curr->next = temp->next;
+				free(temp);
+				if(curr->next == NULL)
+				{
+					queue->end = curr;
+				}
+				queue->size--;
+				return 0;
+			}
+		}
+		temp = curr;
+		curr = curr->next;
+	}
 	return -1;
 }
 
