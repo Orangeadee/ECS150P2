@@ -35,8 +35,6 @@ queue_t queue_create(void)
 
 	que->begin = NULL;
 	que->end = NULL;
-	que->begin->next = NULL;
-	que->end->next = NULL;
 	que->size = 0;
 	return que;
 }
@@ -213,10 +211,71 @@ int queue_delete(queue_t queue, void *data)
 	return -1;
 }
 
+/*
+ *					*
+ * Iterate queue:			*
+ * - Return -1 if the queue or the	*
+ *   funtion is empty			*
+ * - Create a new node for iteration	*
+ *   temp is to check whether the queue	*
+ *   has reached to the end		*
+ * - While @itr still has next value,	*
+ *   pass in queue, data in itr and its	*
+ *   corresponding @arg into function	*
+ * - If function success and return 1,	*
+ *   save the returned data if it has	*
+ *   one, then iteration success and 	*
+ *   will return 0			*
+ * - If function fail, increment itr	*
+ *   and continue passing in datas into	*
+ *   funtion				*
+ * - Will return -1 if all data in itr	*
+ *   fail in function			*
+ *   					*
+ */
 int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
 {
+	int status = -1;
 	/* TODO */
-	return -1;
+	if(queue == NULL || func == NULL)
+	{
+		return status;
+	}
+	struct node* itr = queue->begin;
+	struct node* temp = queue->begin->next;
+	while(itr->next != NULL)
+	{
+		int val = (*func)(queue,itr->data,arg);
+		if(val == 1)
+		{
+			if(data == NULL)
+			{
+				status = 0;
+				break;
+			}
+			/* if data is not NULL, pass in the data */
+			else
+			{
+				status = 0;
+				*data = itr->data;
+				break;
+			}
+		}
+		else
+		{
+			if(temp->next == NULL)
+			{
+				itr = itr->next;
+			}
+			else
+			{
+				itr = itr->next;;
+				temp = temp->next;
+			}
+		}
+
+	}
+	return status;
 }
 
 /*
