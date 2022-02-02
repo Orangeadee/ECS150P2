@@ -9,18 +9,59 @@
 
 #include "private.h"
 #include "uthread.h"
+#include "queue.h"
 
 /* TODO */
+enum state {ready,running,blocked,zombie,exited};
+
+struct TCB {
+	uthread_t tid;
+	enum state s;
+	uthread_ctx_t save_ctx;
+	void *stack;
+	bool pre;
+	queue_t ready_q;
+	queue_t zombie_q;
+	queue_t blocked_q;
+};
+
+struct TCB *curr;
 
 int uthread_start(int preempt)
 {
+
 	/* TODO */
-	return -1;
+	struct TCB *thread = (struct TCB*)malloc(sizeof(struct TCB));
+	assert(thread);
+
+	thread->ready_q = queue_create();
+	thread->zombie_q = queue_create();
+	thread->blocked_q = queue_create();
+	thread->tid = 0;
+	thread->s = ready;
+	thread->stack = NULL;
+
+	if(preempt == 1)
+	{
+		preempt_enable();
+		thread->pre = true;	
+	}
+	else
+	{
+		preempt_disable();
+		thread->pre = false;
+	}
+	curr = thread;
+	return 0;
 }
 
 int uthread_stop(void)
 {
 	/* TODO */
+	if(curr->pre == true)
+	{
+		preempt_stop();
+	}
 	return -1;
 }
 
