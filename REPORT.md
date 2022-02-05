@@ -18,7 +18,7 @@ Huilin Zhang, He Li
     - Preemption
     - Testing
 
-### Phase 1
+### Phase 1:
 ###### Queue API
 In the first part of the project, a link list is implemented and it contains
 the current node's data and a node pointer that points to the next node. Then
@@ -55,6 +55,6 @@ deleting a given data in the queue. And it is also tested by finding a certain
 data within the queue. If data is found, return 1, 0 otherwise. Fortunately,
 our queue API passes all the test cases we created.
 
-### Phase 2
+### Phase 2:
 ###### Private Data Structure
 
