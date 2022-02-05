@@ -18,7 +18,8 @@ Huilin Zhang, He Li
     - Preemption
     - Testing
 
-### Phase 1 - Queue API
+### Phase 1
+###### Queue API
 In the first part of the project, a link list is implemented and it contains
 the current node's data and a node pointer that points to the next node. Then
 in a queue, we use two node pointers to keep track of the top and bottom of 
@@ -36,14 +37,14 @@ the queue from top to bottom and extract data to the given function `func`.
 Lastly, the size stored in the queue will be used in `queue_length()` to return
 the size of the current queue.
 
-###### Phase 1 - Makefile
+###### Makefile
 Since we are suppose to create a static library archive `libuthread.a`, we will
 be using the command `ar rcs` for archive creation. And `ojbs` contains all the
 essential object files to create `libuthread.a`. We also include `-MMD` for 
 dependency tracking and can be used to compose the generic rule for object
 generation. Finally, a `clean` option to clear all the files created by `make`.
 
-###### Phase 1 - Testing
+###### Testing
 In order to test the correctness of our queue API, we create `queue_tester.c`
 and add as many usage senarios as possible. To test `destroy()`, we attempt to
 destroy an empty queue and a non-empty queue. The result shows our queue passes
@@ -54,5 +55,6 @@ deleting a given data in the queue. And it is also tested by finding a certain
 data within the queue. If data is found, return 1, 0 otherwise. Fortunately,
 our queue API passes all the test cases we created.
 
-###### Phase 2 - Private Data Structure
+### Phase 2
+###### Private Data Structure
 
