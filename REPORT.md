@@ -18,7 +18,7 @@ Huilin Zhang, He Li
     - Preemption
     - Testing
 
-###### Phase 1 - Queue API
+### Phase 1 - Queue API
 In the first part of the project, a link list is implemented and it contains
 the current node's data and a node pointer that points to the next node. Then
 in a queue, we use two node pointers to keep track of the top and bottom of 
