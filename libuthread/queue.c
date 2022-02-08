@@ -11,7 +11,6 @@ struct node {
 };
 
 struct queue {
-	/* TODO */
 	struct node *begin;
 	struct node *end;
 	int size;
@@ -29,10 +28,8 @@ struct queue {
  */
 queue_t queue_create(void)
 {
-	/* TODO */
 	queue_t que = (queue_t)malloc(sizeof(struct queue));
 	assert(que);
-
 	que->begin = NULL;
 	que->end = NULL;
 	que->size = 0;
@@ -56,7 +53,6 @@ queue_t queue_create(void)
  */
 int queue_destroy(queue_t queue)
 {
-	/* TODO */
 	int status = 0;
 	if(queue == NULL)
 	{
@@ -72,6 +68,7 @@ int queue_destroy(queue_t queue)
 	}
 	if(status == 0)
 	{
+		free(queue->begin);
 		free(queue);
 	}
 	return status;
@@ -95,7 +92,6 @@ int queue_destroy(queue_t queue)
  */
 int queue_enqueue(queue_t queue, void *data)
 {
-	/* TODO */
 	struct node* enter_node = (struct node*)malloc(sizeof(struct node));
 	assert(enter_node);
 	if(queue == NULL || data == NULL)
@@ -105,16 +101,15 @@ int queue_enqueue(queue_t queue, void *data)
 	enter_node->data = data;
 	enter_node->next = NULL;
 
-	if(queue->size == 0)
+	if(queue->size == 0 || queue->begin == NULL)
 	{
 		queue->begin = enter_node;
 		queue->end = enter_node;
+		queue->size++;
+		return 0;
 	}
-	else
-	{
-		queue->end->next = enter_node;
-		queue->end = enter_node;
-	}
+	queue->end->next = enter_node;
+	queue->end = enter_node;
 	queue->size++;
 	return 0;
 }
@@ -133,19 +128,20 @@ int queue_enqueue(queue_t queue, void *data)
  */
 int queue_dequeue(queue_t queue, void **data)
 {
-	/* TODO */
 	if(queue == NULL || queue->size == 0)
 	{
 		return -1;
 	}
 	struct node* old_node = queue->begin;
-	*data = old_node->data;
+	void* pass_data = old_node->data;
 	if(queue->begin != queue->end)
 	{
+		*data = pass_data;
 		queue->begin = queue->begin->next;
 	}
 	else
 	{
+		*data = pass_data;
 		queue->begin = NULL;
 		queue->end = NULL;
 	}
@@ -176,13 +172,20 @@ int queue_dequeue(queue_t queue, void **data)
  */
 int queue_delete(queue_t queue, void *data)
 {
-	/* TODO */
 	if(queue == NULL || queue->size == 0)
 	{
 		return -1;
 	}
 	struct node* curr = queue->begin;
 	struct node* temp = NULL;
+	if(queue_length(queue) == 1)
+	{
+		queue->end = NULL;
+		queue->begin = NULL;
+		queue->size--;
+		free(curr);
+		return 0;
+	}
 	while(curr != NULL)
 	{
 		if(curr->data == data)
@@ -194,6 +197,17 @@ int queue_delete(queue_t queue, void *data)
 			}
 			else
 			{
+				//added
+				if(curr == queue->end)
+				{
+					struct node top = {NULL,queue->begin};
+					queue->end = &top;
+				}
+				if(curr == queue->begin)
+				{
+					queue->begin = curr->next;
+				}
+				//add end
 				curr->data = temp->data;
 				curr->next = temp->next;
 				free(temp);
@@ -236,14 +250,27 @@ int queue_delete(queue_t queue, void *data)
 int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
 {
 	int status = -1;
-	/* TODO */
-	if(queue == NULL || func == NULL)
+	if(queue == NULL || func == NULL || queue_length(queue) == 0)
 	{
 		return status;
 	}
+	if(queue_length(queue) == 1)
+	{
+		struct node* single_data = queue->begin;
+		int val = (*func)(queue,single_data->data,arg);
+		if(val == 1)
+		{
+			status = 0;
+			if(data != NULL)
+				*data = single_data->data;
+			return status;
+		}
+		else
+			return status;
+	}
 	struct node* itr = queue->begin;
 	struct node* temp = queue->begin->next;
-	while(itr->next != NULL)
+	while(itr != NULL)
 	{
 		int val = (*func)(queue,itr->data,arg);
 		if(val == 1)
@@ -291,7 +318,6 @@ int queue_iterate(queue_t queue, queue_func_t func, void *arg, void **data)
  */
 int queue_length(queue_t queue)
 {
-	/* TODO */
 	int length = 0;
 	if(queue == NULL)
 	{
