@@ -19,15 +19,25 @@ void preempt_start(void)
 {
 	/* TODO */
 	struct itimerval new;
+	struct sigaction new_action;
   	new.it_interval.tv_usec = 10;
   	new.it_interval.tv_sec = 0;
   	new.it_value.tv_usec = 10;
   	new.it_value.tv_sec = 0;
 
-	void termination_handler (int signum);
-	signal (SIGVTALRM, termination_handler);
+	void handler (__attribute__((unused)) int signum)
+	{
+		uthread_yield();
+	}
+
+	new_action.sa_handler = handler;
+    sigemptyset (&new_action.sa_mask);
+ 	new_action.sa_flags = 0;
+
+	sigaction (SIGVTALRM, &new_action, NULL);
 	setitimer (ITIMER_VIRTUAL, &new, NULL);
 }
+
 
 void preempt_stop(void)
 {
@@ -58,3 +68,10 @@ void preempt_disable(void)
 	sigprocmask (SIG_BLOCK, &set, NULL);
 }
 
+
+/*
+while(1)
+    {
+        printf("waiting...\n");
+    }
+*/
