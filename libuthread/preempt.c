@@ -31,7 +31,7 @@ void preempt_start(void)
 	}
 
 	new_action.sa_handler = handler;
-    sigemptyset (&new_action.sa_mask);
+    	sigemptyset (&new_action.sa_mask);
  	new_action.sa_flags = 0;
 
 	sigaction (SIGVTALRM, &new_action, NULL);
@@ -43,11 +43,11 @@ void preempt_stop(void)
 {
 	/* TODO */
 	struct itimerval new;  
-    new.it_interval.tv_usec = 0;
+    	new.it_interval.tv_usec = 0;
   	new.it_interval.tv_sec = 0;
   	new.it_value.tv_usec = 0;
   	new.it_value.tv_sec = 0;
-    setitimer(ITIMER_VIRTUAL, &new, NULL);  
+    	setitimer(ITIMER_VIRTUAL, &new, NULL);  
 }
 
 void preempt_enable(void)
